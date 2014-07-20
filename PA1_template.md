@@ -4,12 +4,12 @@
 ## Loading and preprocessing the data
 
 ```r
-data = read.csv("activity.csv")
+data <- read.csv("activity.csv")
 ```
 Let us add a datetime field combining date and time for further processing if required.
 
 ```r
-data$datetime = strptime(paste(data$date, sprintf("%04d", data$interval)), format="%Y-%m-%d %H%M")
+data$datetime <- strptime(paste(data$date, sprintf("%04d", data$interval)), format="%Y-%m-%d %H%M")
 ```
 
 ## What is mean total number of steps taken per day?
@@ -17,7 +17,7 @@ data$datetime = strptime(paste(data$date, sprintf("%04d", data$interval)), forma
 We can use the aggregate function to sum all activity on a particular day.
 
 ```r
-daydata = aggregate(steps ~ date, data = data, FUN = sum)
+daydata <- aggregate(steps ~ date, data = data, FUN = sum)
 ```
 Now we can plot the histogram on the number of steps per day
 
@@ -51,7 +51,7 @@ From here, we see that the mean number of steps per day is 1.0766 &times; 10<sup
 To get the average daily activity patter, we need to aggegate by the interval using the mean function.
 
 ```r
-intervaldata = aggregate(steps ~ interval, data = data, FUN = mean)
+intervaldata <- aggregate(steps ~ interval, data = data, FUN = mean)
 ```
 We can plot this as a timeseries
 
@@ -119,7 +119,15 @@ median(daydata_f$steps_filled)
 ```
 ## [1] 10766
 ```
-From here, we see that the mean number of steps per day is 1.0766 &times; 10<sup>4</sup> and median is 10765. We see that the mean has remain unchanged but the median value has increased slightly. 
+From here, we see that the mean number of steps per day is 1.0766 &times; 10<sup>4</sup> and median is 1.0766 &times; 10<sup>4</sup>. We see that the mean has remain unchanged but the median value has increased slightly. But more than that, the histogram shows that the total number of steps has increased overall for some days. We can see that via the following comparison of histograms.
+
+
+```r
+histogram(~ daydata$steps +daydata_f$steps_filled, type="count", 
+          breaks=20, layout=c(2,1), xlab="Total number of steps")
+```
+
+![plot of chunk unnamed-chunk-13](figure/unnamed-chunk-13.png) 
 
 ## Are there differences in activity patterns between weekdays and weekends?
 Now we will analyze the difference in activity between weekday and weekends. We will use the filled data for this. Lets add a factor variable for weekdays (Monday to Friday) and weekend (Saturday and Sunday) using the weekdays function.
@@ -131,11 +139,11 @@ data$day <- factor(weekdays(data$datetime), levels)
 labels <- c("Weekday", "Weekday", "Weekday", "Weekday", "Weekday", "Weekend", "Weekend")
 levels(data$day) <- labels
 
-intervaldata = aggregate(steps_filled ~ interval+day, data = data, FUN = mean)
+intervaldata <- aggregate(steps_filled ~ interval+day, data = data, FUN = mean)
 
 xyplot(steps_filled ~ interval|day, data=intervaldata, ylab="Number of steps", type='l', layout=c(1,2))
 ```
 
-![plot of chunk unnamed-chunk-13](figure/unnamed-chunk-13.png) 
+![plot of chunk unnamed-chunk-14](figure/unnamed-chunk-14.png) 
 
 A visual overview shows reduced activity in the daytime for the weekdays as compared to weekends.
